@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import date
-from src.models.member import Member  # type: ignore
+
 from src.models.book import Book
+from src.models.member import Member  # type: ignore
 
 
 @dataclass
