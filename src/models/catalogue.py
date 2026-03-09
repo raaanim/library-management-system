@@ -1,5 +1,5 @@
 class Catalogue:
-    _instance = None
+    _instance = None # type: ignore
 
     def __new__(cls):
         if cls._instance is None:
