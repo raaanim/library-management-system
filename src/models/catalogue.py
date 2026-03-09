@@ -1,13 +1,14 @@
 # Classe Singleton "Catalogue" per gestire aggregazione e ricerche di libri nel db.
 # Gestisce il catalogo dei libri.
 
-class Catalogue():
+
+class Catalogue:
     _instance = None  # type: ignore
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.__bookList = [] 
+            cls._instance.__bookList = []
         return cls._instance
 
     def get_bookList(self):
