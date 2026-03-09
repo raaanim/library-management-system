@@ -1,4 +1,4 @@
-from loan import Loan
+from .loan import Loan
 from dataclasses import dataclass
 
 @dataclass
