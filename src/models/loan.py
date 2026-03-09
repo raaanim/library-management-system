@@ -1,25 +1,19 @@
+from dataclasses import dataclass
 from datetime import date
 from src.models.member import Member
+from src.models.book import Book
 
 
+@dataclass
 class Loan:
     daily_fine = 1.0
-
-    def __init__(
-        self,
-        id: int,
-        member: "Member",
-        book,
-        loan_date: date,
-        due_date: date,
-    ):
-        self.id = id
-        self.member = member
-        self.book = book
-        self.loan_date = loan_date
-        self.due_date = due_date
-        self.return_date: date | None = None
-        self.fine: float = 0.0
+    id: int
+    member: Member
+    book: Book
+    loan_date: date
+    due_date: date
+    return_date: date | None = None
+    fine: float = 0.0
 
     def is_overdue(self) -> bool:
         if self.return_date is None:
