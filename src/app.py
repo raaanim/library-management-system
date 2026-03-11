@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask
 from src.models.base import db
 from src.views.catalogue_view import catalogue_bp
