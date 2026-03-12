@@ -1,13 +1,13 @@
 class Book:
     def __init__(self, **kwargs) -> None:
-        self.__id: int | None = kwargs.get("id")
+        self.__id: str | int | None = kwargs.get("id")
         self.__title: str | None = kwargs.get("title")
         self.__authors: list[str] = kwargs.get("authors", [])
         self.__languages: list[str] = kwargs.get("languages", [])
         self.__first_publish_year: int | None = kwargs.get("first_publish_year")
         self.__cover_url: str | None = kwargs.get("cover_url")
 
-    def get_id(self) -> int | None:
+    def get_id(self) -> str | int | None:
         return self.__id
 
     def get_title(self) -> str | None:
