@@ -51,12 +51,17 @@ class Reader:
         return results
 
     def get_editions_by_language(self, work_id: str) -> dict[str, str]:
-        response = get(
-            BASE_URL + f"works/{work_id}/editions.json",
-            params={"limit": 50},
-            timeout=10,
-        )
-        data = response.json()
+        try:
+            response = get(
+                BASE_URL + f"works/{work_id}/editions.json",
+                params={"limit": 50},
+                timeout=10,
+            )
+            data = response.json()
+        except (Timeout, ConnectionError, HTTPError):
+            # In caso di errore di rete restituiamo un dizionario vuoto per evitare il crash del chiamante.
+            return {}
+
         result = {}
         for entry in data.get("entries", []):
             langs = entry.get("languages", [])
@@ -69,9 +74,15 @@ class Reader:
         return result
 
     def get_edition(self, edition_id: str) -> dict | None:
-        response = get(BASE_URL + f"books/{edition_id}.json", timeout=10)
+        try:
+            response = get(BASE_URL + f"books/{edition_id}.json", timeout=10)
+        except (Timeout, ConnectionError, HTTPError):
+            # In caso di errore di rete restituiamo None per evitare il crash del chiamante.
+            return None
+
         if response.status_code != 200:
             return None
+
         data = response.json()
         cover_id = data.get("covers", [None])[0]
 
