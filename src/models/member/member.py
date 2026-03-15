@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -7,6 +9,11 @@ if TYPE_CHECKING:
 
 @dataclass
 class MemberData:
+    """
+    Struttura dati per memorizzare le informazioni di base di un membro.
+    Utilizzata per passare i dati al costruttore della classe Member in modo pulito.
+    """
+
     id: int
     username: str
     email: str
@@ -15,6 +22,11 @@ class MemberData:
 
 
 class Member:
+    """
+    Classe che rappresenta un utente (membro) della biblioteca.
+    Gestisce i dati personali e i prestiti attualmente attivi.
+    """
+
     MAX_ACTIVE_LOANS = 3
 
     def __init__(self, data: MemberData) -> None:

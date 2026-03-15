@@ -2,6 +2,11 @@ from src.models.book.book import Book
 
 
 class Catalogue:
+    """
+    Classe che rappresenta il catalogo della biblioteca (implementata come Singleton).
+    Mantiene al suo interno la lista dei libri e offre metodi per aggiungerli, rimuoverli o cercarli.
+    """
+
     __instance = None
 
     def __new__(cls) -> "Catalogue":
