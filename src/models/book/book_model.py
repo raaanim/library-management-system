@@ -15,6 +15,10 @@ class BookModel(db.Model):
     authors = db.Column(db.String(500), nullable=False)
     languages = db.Column(db.String(255), nullable=False)
     first_publish_year = db.Column(db.Integer, nullable=True)
+    cover_url = db.Column(db.String(500), nullable=True)
+    catalogue_id = db.Column(db.Integer, db.ForeignKey("catalogues.id"), nullable=True)
+
+    catalogue = db.relationship("CatalogueModel", back_populates="books")
 
     def to_dict(self) -> dict:
         """Restituisce le proprietà del libro in formato dizionario."""
@@ -25,6 +29,8 @@ class BookModel(db.Model):
             "authors": self.authors,
             "languages": self.languages,
             "first_publish_year": self.first_publish_year,
+            "cover_url": self.cover_url,
+            "catalogue_id": self.catalogue_id,
         }
 
     def update(self, **kwargs) -> None:
@@ -32,8 +38,3 @@ class BookModel(db.Model):
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
-
-    cover_url = db.Column(db.String(500), nullable=True)
-    catalogue_id = db.Column(db.Integer, db.ForeignKey("catalogues.id"), nullable=True)
-
-    catalogue = db.relationship("CatalogueModel", back_populates="books")
