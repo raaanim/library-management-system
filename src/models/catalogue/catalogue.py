@@ -1,4 +1,4 @@
-from ..book.book import Book
+from src.models.book.book import Book
 
 
 class Catalogue:
@@ -29,19 +29,32 @@ class Catalogue:
             raise ValueError("Book not found in catalogue.")
 
     def search_by_title(self, title: str) -> list[Book]:
-        results = [book for book in self.__booklist if book.title == title]
+        results = [
+            book
+            for book in self.__booklist
+            if (book_title := book.get_title()) is not None
+            and title.lower() in book_title.lower()
+        ]
         if not results:
             print("Book not found.")
         return results
 
     def search_by_author(self, author: str) -> list[Book]:
-        results = [book for book in self.__booklist if author in book.authors]
+        results = [
+            book
+            for book in self.__booklist
+            if any(author.lower() in a.lower() for a in book.get_authors())
+        ]
         if not results:
             print("Book not found.")
         return results
 
     def search_by_language(self, language: str) -> list[Book]:
-        results = [book for book in self.__booklist if language in book.languages]
+        results = [
+            book
+            for book in self.__booklist
+            if any(language.lower() in l.lower() for l in book.get_languages())
+        ]
         if not results:
             print("Book not found.")
         return results

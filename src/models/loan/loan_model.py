@@ -1,21 +1,25 @@
 # src/models/loan/loan_model.py
 from datetime import date
 
-from ..base import db
+from src.models.base import db
 
 
 class LoanModel(db.Model):
     __tablename__ = "loans"
 
     id = db.Column(db.Integer, primary_key=True)
-    member_id = db.Column(db.Integer, db.ForeignKey("members.id"), nullable=False)
-    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    member_id = db.Column(
+        db.Integer, db.ForeignKey("members.id", ondelete="CASCADE"), nullable=False
+    )
+    book_id = db.Column(
+        db.Integer, db.ForeignKey("books.id", ondelete="CASCADE"), nullable=False
+    )
     loan_date = db.Column(db.Date, nullable=False, default=date.today)
     due_date = db.Column(db.Date, nullable=False)
     return_date = db.Column(db.Date, nullable=True)
     fine = db.Column(db.Float, nullable=False, default=0.0)
 
-    member = db.relationship("MemberModel", backref="loans")
+    member = db.relationship("MemberModel", back_populates="loans")
     book = db.relationship("BookModel", backref="loans")
 
     def to_dict(self) -> dict:

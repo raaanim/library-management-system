@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..loan.loan import Loan
+    from src.models.loan.loan import Loan
 
 
 @dataclass

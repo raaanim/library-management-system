@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from datetime import date
 from typing import TYPE_CHECKING
 
-from ..book.book import Book
+from src.models.book.book import Book
 
 if TYPE_CHECKING:
-    from ..member.member import Member
+    from src.models.member.member import Member
 
 
 @dataclass
