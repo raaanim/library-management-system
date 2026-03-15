@@ -1,10 +1,14 @@
-# src/models/loan/loan_model.py
 from datetime import date
 
 from src.models.base import db
 
 
 class LoanModel(db.Model):
+    """
+    Modello SQLAlchemy che riflette la tabella 'loans' nel database.
+    Mantiene i dati storici e attuali dei prestiti associando utenti e libri.
+    """
+
     __tablename__ = "loans"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -23,17 +27,17 @@ class LoanModel(db.Model):
     book = db.relationship("BookModel", backref="loans")
 
     def to_dict(self) -> dict:
+        """Restituisce le proprietà del prestito a dizionario."""
         return {
             "id": self.id,
             "member_id": self.member_id,
             "book_id": self.book_id,
-            "loan_date": self.loan_date.isoformat(),
-            "due_date": self.due_date.isoformat(),
+            "loan_date": self.loan_date.isoformat() if self.loan_date else None,
             "return_date": self.return_date.isoformat() if self.return_date else None,
-            "fine": self.fine,
         }
 
-    def update_from_dict(self, data: dict) -> None:
-        self.due_date = data["due_date"]
-        self.return_date = data.get("return_date")
-        self.fine = data.get("fine", 0.0)
+    def update(self, **kwargs) -> None:
+        """Aggiorna le colonne in base ai kwargs forniti."""
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)

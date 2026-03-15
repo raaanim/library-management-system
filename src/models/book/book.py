@@ -1,5 +1,11 @@
 class Book:
+    """
+    Classe che rappresenta l'entità di dominio di un Libro.
+    Incapsula le proprietà del libro (titolo, autori, etc.) con relativi getter e setter.
+    """
+
     def __init__(self, **kwargs) -> None:
+        # Inizializzazione degli attributi, prelevando i valori dai kwargs passati al costruttore
         self.__id: str | int | None = kwargs.get("id")
         self.__title: str | None = kwargs.get("title")
         self.__authors: list[str] = kwargs.get("authors", [])

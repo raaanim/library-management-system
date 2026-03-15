@@ -1,7 +1,12 @@
-from src.models.base import SerializerMixin, db
+from src.models.base import db
 
 
-class CatalogueModel(db.Model, SerializerMixin):
+class CatalogueModel(db.Model):
+    """
+    Modello SQLAlchemy per mappare la tabella 'catalogues' nel database.
+    Gestisce i dati del catalogo e la relazione (uno-a-molti) con i libri ad esso associati.
+    """
+
     __tablename__ = "catalogues"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -9,23 +14,16 @@ class CatalogueModel(db.Model, SerializerMixin):
 
     books = db.relationship("BookModel", back_populates="catalogue", lazy="select")
 
-    def update_from_dict(self, data: dict) -> None:
-        if "name" in data:
-            self.name = data["name"]
-
-        if "books" in data:
-            books_data = data["books"]
-            if isinstance(books_data, list):
-                if not books_data:
-                    self.books = []
-                else:
-                    first_item = books_data[0]
-                    if not isinstance(first_item, (int, str)):
-                        self.books = books_data
-
     def to_dict(self) -> dict:
+        """Restituisce le proprietà a dizionario."""
         return {
             "id": self.id,
             "name": self.name,
-            "books": self._get_ids_from_relation("books"),
+            "books": [book.to_dict() for book in getattr(self, "books", [])],
         }
+
+    def update(self, **kwargs) -> None:
+        """Aggiorna le colonne in base ai kwargs forniti."""
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
