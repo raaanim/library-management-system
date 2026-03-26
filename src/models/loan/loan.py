@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import date
 from typing import TYPE_CHECKING
@@ -10,6 +12,11 @@ if TYPE_CHECKING:
 
 @dataclass
 class Loan:
+    """
+    Rappresenta l'entità di dominio di un Prestito.
+    Memorizza le informazioni sul libro, l'utente e le date, e calcola le penali in caso di ritardo.
+    """
+
     DAILY_FINE = 1.0
 
     id: int

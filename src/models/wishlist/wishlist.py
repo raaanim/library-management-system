@@ -3,6 +3,11 @@ from src.models.member.member import Member
 
 
 class Wishlist:
+    """
+    Rappresenta l'entità logica della lista dei desideri di un utente.
+    Consente ai membri di salvare e gestire i libri di loro interesse.
+    """
+
     def __init__(self, member: Member) -> None:
         self.__member = member
         self.__books: list[Book] = []
