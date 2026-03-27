@@ -1,11 +1,12 @@
+"""Service layer for catalogue and book management."""
+
+from src.models.base import db
 from src.models.book.book_model import BookModel
+from src.models.catalogue.catalogue_model import CatalogueModel
 
 
 class CatalogueService:
-    """
-    Servizio core per la gestione logica dei libri nel catalogo.
-    Si occupa di recuperare dati dal database o da sorgenti esterne (es. OpenLibrary).
-    """
+    """Singleton service for book catalogue operations."""
 
     __instance = None
 
@@ -14,31 +15,43 @@ class CatalogueService:
             cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def get_or_create_book(
-        self,  # form_data: dict
-    ) -> BookModel:  # pylint: disable=unused-argument
-        """
-        Controlla se un libro preso da OpenLibrary esiste già nel DB locale usando il work_id.
-        Se esiste, lo restituisce. Altrimenti ne crea una copia in locale senza associarlo al catalogo fisico.
-        """
-        # pylint: disable=fixme
-        # TODO: Cerca db.session per BookModel con work_id = form_data["work_id"]
-        # Se c'è lo ritorna
-        # Se non c'è, crea il BookModel, lo aggiunge a db.session e fa il flush/commit.
-        return BookModel()
+    def get_or_create_book(self, form_data: dict) -> BookModel:
+        """Return existing book by work_id or create and persist a new one."""
+        work_id = form_data.get("work_id")
+        existing = BookModel.query.filter_by(work_id=work_id).first()
+        if existing:
+            return existing
 
-    def get_random_books(
-        self,  # limit: int = 20
-    ) -> list[BookModel]:  # pylint: disable=unused-argument
-        """Estrae libri casuali per la Homepage."""
-        # pylint: disable=fixme
-        # TODO: Query randomica su BookModel ignorando OpenLibrary
-        return []
+        catalogue = CatalogueModel.query.first()
+        catalogue_id = catalogue.id if catalogue else None
+
+        first_publish_year = form_data.get("first_publish_year")
+        if first_publish_year:
+            try:
+                first_publish_year = int(first_publish_year)
+            except (ValueError, TypeError):
+                first_publish_year = None
+
+        book = BookModel(
+            work_id=work_id,
+            title=form_data.get("title") or "",
+            authors=form_data.get("authors") or "",
+            languages=form_data.get("languages") or "eng",
+            first_publish_year=first_publish_year,
+            cover_url=form_data.get("cover_url"),
+            catalogue_id=catalogue_id,
+        )
+        db.session.add(book)
+        db.session.flush()
+        return book
+
+    def get_random_books(self, limit: int = 20) -> list[BookModel]:
+        """Return a random sample of books from the catalogue."""
+        return BookModel.query.order_by(db.func.random()).limit(limit).all()
 
     def get_book_by_id(self, book_id: int) -> BookModel | None:
-        """Fetch book from local DB."""
-        return BookModel.query.get(book_id)
+        """Fetch a book by primary key; return None if not found."""
+        return db.session.get(BookModel, book_id)
 
 
-# Singleton export
 catalogue_service = CatalogueService()
