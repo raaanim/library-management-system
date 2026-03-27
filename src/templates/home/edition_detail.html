@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ edition.title }} — Edizione{% endblock %}
+{% block content %}
+<div class="flex gap-8 flex-wrap">
+    {% if edition.cover_url_large %}
+    <img src="{{ edition.cover_url_large }}" alt="{{ edition.title }}" class="w-40 h-60 object-cover rounded-xl shadow flex-shrink-0">
+    {% else %}
+    <div class="w-40 h-60 bg-indigo-100 flex items-center justify-center rounded-xl text-5xl flex-shrink-0">📖</div>
+    {% endif %}
+    <div class="flex-1 min-w-0">
+        <h1 class="text-3xl font-bold text-gray-800 mb-1">{{ edition.title }}</h1>
+        <p class="text-sm text-indigo-600 font-medium mb-3">Edizione {{ edition.language | upper }}</p>
+
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-6">
+            {% if edition.publishers %}
+            <dt class="text-gray-500">Editore</dt>
+            <dd class="text-gray-800">{{ edition.publishers | join(', ') }}</dd>
+            {% endif %}
+            {% if edition.publish_date %}
+            <dt class="text-gray-500">Anno</dt>
+            <dd class="text-gray-800">{{ edition.publish_date }}</dd>
+            {% endif %}
+            {% if edition.isbn_13 %}
+            <dt class="text-gray-500">ISBN-13</dt>
+            <dd class="text-gray-800">{{ edition.isbn_13 }}</dd>
+            {% endif %}
+            {% if edition.number_of_pages %}
+            <dt class="text-gray-500">Pagine</dt>
+            <dd class="text-gray-800">{{ edition.number_of_pages }}</dd>
+            {% endif %}
+        </dl>
+
+        <div class="mt-4">
+        {% if session.get('member_id') %}
+        <form method="POST" action="{{ url_for('loan.borrow') }}" class="inline-block mr-2">
+            <input type="hidden" name="work_id" value="{{ edition.work_id or '' }}">
+            <input type="hidden" name="title" value="{{ edition.title }}">
+            <input type="hidden" name="authors" value="{{ work.authors if work else '' }}">
+            <input type="hidden" name="languages" value="{{ edition.language or 'eng' }}">
+            <input type="hidden" name="first_publish_year" value="{{ work.first_publish_year if work else '' }}">
+            <input type="hidden" name="cover_url" value="{{ edition.cover_url_large or '' }}">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+                Prendi in prestito
+            </button>
+        </form>
+        <form method="POST" action="{{ url_for('wishlist.add_to_wishlist') }}" class="inline-block">
+            <input type="hidden" name="work_id" value="{{ edition.work_id or '' }}">
+            <input type="hidden" name="title" value="{{ edition.title }}">
+            <input type="hidden" name="authors" value="{{ work.authors if work else '' }}">
+            <input type="hidden" name="languages" value="{{ edition.language or 'eng' }}">
+            <input type="hidden" name="first_publish_year" value="{{ work.first_publish_year if work else '' }}">
+            <input type="hidden" name="cover_url" value="{{ edition.cover_url_large or '' }}">
+            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold transition">
+                ♡ Aggiungi alla wishlist
+            </button>
+        </form>
+        {% else %}
+        <button disabled class="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg font-semibold cursor-not-allowed mr-2">
+            Prendi in prestito
+        </button>
+        <button disabled class="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg font-semibold cursor-not-allowed">
+            ♡ Aggiungi alla wishlist
+        </button>
+        <p class="text-sm text-gray-500 mt-3">
+            <a href="{{ url_for('member.login') }}" class="text-indigo-600 hover:underline">Accedi</a>
+            per prendere in prestito o aggiungere alla wishlist.
+        </p>
+        {% endif %}
+        </div>
+
+        {% if edition.work_id %}
+        <a href="{{ url_for('main.book_detail', work_id=edition.work_id) }}"
+            class="text-sm text-indigo-600 hover:underline mt-4 inline-block">← Torna alla scheda del libro</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if work and work.description %}
+<div class="mt-8">
+    <h2 class="text-lg font-semibold text-gray-700 mb-2">Descrizione</h2>
+    <p class="text-gray-700 leading-relaxed">{{ work.description }}</p>
+</div>
+{% endif %}
+{% endblock %}

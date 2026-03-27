@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ work.title }}{% endblock %}
+{% block content %}
+<div class="flex gap-8 flex-wrap">
+    {% if work.cover_url_large %}
+    <img src="{{ work.cover_url_large }}" alt="{{ work.title }}" class="w-40 h-60 object-cover rounded-xl shadow flex-shrink-0">
+    {% else %}
+    <div class="w-40 h-60 bg-indigo-100 flex items-center justify-center rounded-xl text-5xl flex-shrink-0">📖</div>
+    {% endif %}
+    <div class="flex-1 min-w-0">
+        <h1 class="text-3xl font-bold text-gray-800 mb-1">{{ work.title }}</h1>
+        {% if work.first_publish_date %}
+        <p class="text-sm text-gray-500 mb-3">Prima pubblicazione: {{ work.first_publish_date }}</p>
+        {% endif %}
+        {% if work.description %}
+        <p class="text-gray-700 mb-4 leading-relaxed">{{ work.description }}</p>
+        {% endif %}
+        {% if work.subjects %}
+        <div class="flex flex-wrap gap-2 mb-6">
+            {% for subject in work.subjects %}
+            <span class="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">{{ subject }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if session.get('member_id') %}
+        <form method="POST" action="{{ url_for('loan.borrow') }}" class="inline-block mr-2">
+            <input type="hidden" name="work_id" value="{{ work_id }}">
+            <input type="hidden" name="title" value="{{ work.title }}">
+            <input type="hidden" name="authors" value="{{ work.authors or '' }}">
+            <input type="hidden" name="languages" value="eng">
+            <input type="hidden" name="first_publish_year" value="{{ work.first_publish_year or '' }}">
+            <input type="hidden" name="cover_url" value="{{ work.cover_url_large or '' }}">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+                Prendi in prestito
+            </button>
+        </form>
+        <form method="POST" action="{{ url_for('wishlist.add_to_wishlist') }}" class="inline-block">
+            <input type="hidden" name="work_id" value="{{ work_id }}">
+            <input type="hidden" name="title" value="{{ work.title }}">
+            <input type="hidden" name="authors" value="{{ work.authors or '' }}">
+            <input type="hidden" name="languages" value="eng">
+            <input type="hidden" name="first_publish_year" value="{{ work.first_publish_year or '' }}">
+            <input type="hidden" name="cover_url" value="{{ work.cover_url_large or '' }}">
+            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold transition">
+                ♡ Aggiungi alla wishlist
+            </button>
+        </form>
+        {% else %}
+        <button disabled class="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg font-semibold cursor-not-allowed mr-2">
+            Prendi in prestito
+        </button>
+        <button disabled class="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg font-semibold cursor-not-allowed">
+            ♡ Aggiungi alla wishlist
+        </button>
+        <p class="text-sm text-gray-500 mt-3">
+            <a href="{{ url_for('member.login') }}" class="text-indigo-600 hover:underline">Accedi</a>
+            per prendere in prestito o aggiungere alla wishlist.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+{% if editions %}
+<h2 class="text-xl font-semibold text-gray-700 mt-10 mb-4">Edizioni disponibili</h2>
+<div class="flex flex-wrap gap-3">
+    {% for lang, edition_id in editions.items() %}
+    <a href="{{ url_for('main.edition_detail', edition_id=edition_id) }}"
+        class="border border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-medium transition">
+        {{ lang | upper }}
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
