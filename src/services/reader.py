@@ -1,15 +1,16 @@
+"""HTTP client for the OpenLibrary REST API."""
+
 from requests import get
-from requests.exceptions import ConnectionError, HTTPError, Timeout
+from requests.exceptions import ConnectionError as RequestsConnectionError
+from requests.exceptions import HTTPError, Timeout
 
 BASE_URL = "https://openlibrary.org/"
 FIELDS = "key,title,author_name,cover_i,first_publish_year"
 
 
 class Reader:
-    """
-    Client per le API di OpenLibrary.
-    Permette di ricercare libri, edizioni specifiche per lingua e scaricare copertine/metadati.
-    """
+    """Singleton HTTP client for the OpenLibrary API (search, editions,
+    works)."""
 
     __instance = None
 
@@ -19,6 +20,8 @@ class Reader:
         return cls.__instance
 
     def search(self, query: str, by: str = "title", limit: int = 20) -> list[dict]:
+        """Search books on OpenLibrary by title or author, return a list of
+        result dicts."""
         params: dict[str, str | int] = {
             by: query,
             "limit": limit,
@@ -27,8 +30,8 @@ class Reader:
         try:
             response = get(BASE_URL + "search.json", params=params, timeout=10)
             data = response.json()
-        except (Timeout, ConnectionError, HTTPError):
-            # In caso di errore di rete restituiamo una lista vuota per evitare il crash del chiamante.
+        except (Timeout, RequestsConnectionError, HTTPError):
+
             return []
 
         results = []
@@ -51,6 +54,7 @@ class Reader:
         return results
 
     def get_editions_by_language(self, work_id: str) -> dict[str, str]:
+        """Return a mapping of language code to edition ID for a given work."""
         try:
             response = get(
                 BASE_URL + f"works/{work_id}/editions.json",
@@ -58,8 +62,8 @@ class Reader:
                 timeout=10,
             )
             data = response.json()
-        except (Timeout, ConnectionError, HTTPError):
-            # In caso di errore di rete restituiamo un dizionario vuoto per evitare il crash del chiamante.
+        except (Timeout, RequestsConnectionError, HTTPError):
+
             return {}
 
         result = {}
@@ -74,10 +78,12 @@ class Reader:
         return result
 
     def get_edition(self, edition_id: str) -> dict | None:
+        """Fetch metadata for a specific book edition; return None on error
+        or 404."""
         try:
             response = get(BASE_URL + f"books/{edition_id}.json", timeout=10)
-        except (Timeout, ConnectionError, HTTPError):
-            # In caso di errore di rete restituiamo None per evitare il crash del chiamante.
+        except (Timeout, RequestsConnectionError, HTTPError):
+
             return None
 
         if response.status_code != 200:
@@ -112,7 +118,12 @@ class Reader:
         }
 
     def get_work(self, work_id: str) -> dict | None:
-        response = get(BASE_URL + f"works/{work_id}.json", timeout=10)
+        """Fetch metadata for a work (title, description, subjects); return
+        None on error."""
+        try:
+            response = get(BASE_URL + f"works/{work_id}.json", timeout=10)
+        except (Timeout, RequestsConnectionError, HTTPError):
+            return None
         if response.status_code != 200:
             return None
         data = response.json()
@@ -121,7 +132,8 @@ class Reader:
         if isinstance(description, dict):
             description = description.get("value")
 
-        cover_id = data.get("covers", [None])[0]
+        covers = data.get("covers", [])
+        cover_id = covers[0] if covers else None
 
         return {
             "title": data.get("title"),

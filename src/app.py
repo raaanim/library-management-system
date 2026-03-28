@@ -1,46 +1,66 @@
+"""Flask application factory and main entry point."""
+
+import os
+
 from flask import Flask
 from flask_migrate import Migrate
 
 from src.models.base import db
+from src.models.book.book_model import BookModel
+from src.models.catalogue.catalogue_model import CatalogueModel
+from src.models.loan.loan_model import LoanModel
+from src.models.member.member_model import MemberModel
+from src.models.wishlist.wishlist_model import WishlistModel
+from src.populate import populate_books
+from src.views.loan_view import loan as loan_blueprint
+from src.views.main_view import main as main_blueprint
+from src.views.member_view import member as member_blueprint
+from src.views.wishlist_view import wishlist_bp as wishlist_blueprint
 
 
-def create_app() -> Flask:
-    """
-    Funzione factory per creare e configurare l'applicazione Flask.
-    """
-    # Inizializza l'applicazione Flask
-    app = Flask(__name__)
+def create_app(test_config: dict | None = None) -> Flask:
+    """Create and configure the Flask application."""
 
-    # Configura l'URI del database SQLite (il file verrà creato locale come library.db)
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    app = Flask(
+        __name__,
+        template_folder="templates",
+        static_folder="static",
+        instance_path=os.path.join(root_path, "instance"),
+        instance_relative_config=True,
+    )
+
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///library.db"
-
-    # Disabilita il tracciamento delle modifiche di SQLAlchemy per risparmiare risorse
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-    # Chiave segreta necessaria per la gestione delle sessioni (es. login, flash messages)
     app.config["SECRET_KEY"] = "super-secret-key-for-dev"
 
-    # Collega l'istanza del database (db) all'app appena creata
-    db.init_app(app)
+    if test_config:
+        app.config.update(test_config)
 
-    # Inizializza Flask-Migrate per gestire le migrazioni dello schema del database
+    db.init_app(app)
     Migrate(app, db)
 
-    # Nota: Le registrazioni dei Blueprint sono state temporaneamente rimosse
-    # poiché i file delle viste sono attualmente solo scaffold descrittivi.
+    app.register_blueprint(main_blueprint)
+    app.register_blueprint(member_blueprint)
+    app.register_blueprint(loan_blueprint)
+    app.register_blueprint(wishlist_blueprint)
 
-    # All'interno del contesto dell'applicazione, crea tutte le tabelle nel database
-    # basandosi sui modelli definiti (se non esistono già)
     with app.app_context():
+
+        _ = (BookModel, CatalogueModel, LoanModel, MemberModel, WishlistModel)
         db.create_all()
 
-    # Ritorna l'applicazione configurata pronta per essere eseguita
+        if not CatalogueModel.query.first():
+            db.session.add(CatalogueModel(name="Biblioteca"))
+            db.session.commit()
+
+        if not test_config and BookModel.query.count() == 0:
+            print("Database vuoto, avvio popolamento automatico...")
+            populate_books()
+
     return app
 
 
 if __name__ == "__main__":
-    # Crea l'istanza dell'applicazione
     flask_app = create_app()
-
-    # Avvia il server di sviluppo di Flask (debug=True permette il ricaricamento automatico ad ogni modifica)
     flask_app.run(debug=True)
