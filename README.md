@@ -1,16 +1,16 @@
-# Library Management System – Istruzioni di installazione
+# Library Management System – Installation Instructions
 
-Questa guida spiega come configurare l'ambiente di sviluppo del progetto.
+This guide explains how to set up the development environment for the project.
 
-Tutti i comandi di installazione devono essere eseguiti **dopo aver attivato l'ambiente virtuale**. In caso contrario, i pacchetti verranno installati a livello di sistema.
+All installation commands must be executed **after activating the virtual environment**. Otherwise, packages will be installed globally on the system.
 
-## 1. Creare un ambiente virtuale
+## 1. Create a virtual environment
 
 ```bash
 python3 -m venv .venv
 ```
 
-## 2. Attivare l'ambiente virtuale
+## 2. Activate the virtual environment
 
 ### Linux / macOS
 
@@ -30,69 +30,126 @@ source .venv/bin/activate
 .venv\Scripts\activate.bat
 ```
 
-Dopo l'attivazione, il terminale mostrerà il prefisso `(.venv)` all'inizio della riga, indicando che l'ambiente virtuale è attivo.
+After activation, the terminal will display the prefix `(.venv)` at the beginning of the line, indicating that the virtual environment is active.
 
-Se PowerShell blocca l'esecuzione degli script, eseguire una volta il seguente comando:
+If PowerShell blocks script execution, run the following command once:
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-## Uscire dall'ambiente virtuale
+## Exit the virtual environment
 
-Per disattivare l'ambiente virtuale:
+To deactivate the virtual environment:
 
 ```bash
 deactivate
 ```
 
-Dopo questo comando il prefisso `(.venv)` scomparirà dal terminale, indicando che si è tornati all'ambiente Python di sistema.
+After this command, the `(.venv)` prefix will disappear, indicating that you have returned to the system Python environment.
 
-## 3. Aggiornare pip
+## 3. Upgrade pip
 
-Con l'ambiente virtuale attivo, aggiornare `pip`:
+With the virtual environment active, upgrade `pip`:
 
 ```bash
 pip install --upgrade pip
 ```
 
-## 4. Installare le dipendenze di produzione
+## 4. Install production dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 5. Installare le dipendenze di sviluppo
+## 5. Install development dependencies
 
 ```bash
 pip install -r requirements_dev.txt
 ```
 
-## 6. Verificare l'installazione
+## 6. Verify installation
 
-Per controllare che i pacchetti siano stati installati correttamente:
+To check that the packages were installed correctly:
 
 ```bash
 pip list
 ```
 
+## 7. Fix Flask import issues
 
-## 7. Risoluzione errori import flask
-Aprire la cartella del progetto in VS Code.
+Open the project folder in Visual Studio Code.
 
-Selezionare l'interprete Python:
+Select the Python interpreter:
 
 Ctrl + Shift + P
 Python: Select Interpreter
 
-Selezionare:
+Then select:
 
 .venv/bin/python
 
-## Estensioni consigliate per Visual Studio Code
+## 8. Running the project (Flask)
+
+Make sure the virtual environment is activated before running the app.
+
+### Linux / macOS
+
+```
+flask --app src.app run
+```
+
+or
+
+```
+export FLASK_APP=src.app
+export FLASK_ENV=development
+flask run
+```
+
+### Windows (Command Prompt)
+
+```
+set FLASK_APP=app.py
+set FLASK_ENV=development
+flask run
+```
+
+### Windows (PowerShell)
+
+```
+$env:FLASK_APP = "app.py"
+$env:FLASK_ENV = "development"
+flask run
+```
+
+## Database Migrations with Flask-Migrate
+
+Run the following commands from the project root directory and inside your virtual environment `(venv)`.
+
+### 1. Initialize the migrations folder (only once)
+
+```
+flask --app src.app db init
+```
+
+### 2. Generate the first migration (analyzes your models)
+
+```
+flask --app src.app db migrate -m "initial migration"
+```
+
+### 3. Apply the migration to the database
+
+```
+flask --app src.app db upgrade
+```
+
+## Recommended Visual Studio Code extensions
 
 - Python
 - Pylance
 - Python Debugger
 - Python Environments
 - SQLite Viewer
+  
