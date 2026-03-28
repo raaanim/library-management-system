@@ -101,21 +101,24 @@ flask --app src.app run
 
 or
 
-```export FLASK_APP=src.app
+```
+export FLASK_APP=src.app
 export FLASK_ENV=development
 flask run
 ```
 
 ### Windows (Command Prompt)
 
-```set FLASK_APP=app.py
+```
+set FLASK_APP=app.py
 set FLASK_ENV=development
 flask run
 ```
 
 ### Windows (PowerShell)
 
-```$env:FLASK_APP = "app.py"
+```
+$env:FLASK_APP = "app.py"
 $env:FLASK_ENV = "development"
 flask run
 ```
