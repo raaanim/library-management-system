@@ -95,7 +95,13 @@ Make sure the virtual environment is activated before running the app.
 
 ### Linux / macOS
 
-```export FLASK_APP=app.py
+```
+flask --app src.app run
+```
+
+or
+
+```export FLASK_APP=src.app
 export FLASK_ENV=development
 flask run
 ```
@@ -107,7 +113,6 @@ set FLASK_ENV=development
 flask run
 ```
 
-
 ### Windows (PowerShell)
 
 ```$env:FLASK_APP = "app.py"
@@ -115,12 +120,26 @@ $env:FLASK_ENV = "development"
 flask run
 ```
 
-## Alternative way to run Flask
+## Database Migrations with Flask-Migrate
 
-You can also run the application directly with Python:
+Run the following commands from the project root directory and inside your virtual environment `(venv)`.
+
+### 1. Initialize the migrations folder (only once)
 
 ```
-python app.py
+flask --app src.app db init
+```
+
+### 2. Generate the first migration (analyzes your models)
+
+```
+flask --app src.app db migrate -m "initial migration"
+```
+
+### 3. Apply the migration to the database
+
+```
+flask --app src.app db upgrade
 ```
 
 ## Recommended Visual Studio Code extensions
