@@ -121,7 +121,6 @@ You can also run the application directly with Python:
 
 ```
 python app.py
-
 ```
 
 ## Recommended Visual Studio Code extensions
