@@ -1,13 +1,13 @@
+"""SQLAlchemy ORM model for the members table."""
+
 from datetime import date
 
 from src.models.base import db
 
 
 class MemberModel(db.Model):
-    """
-    Modello SQLAlchemy che mappa la tabella 'members' nel database.
-    Definisce l'anagrafica degli iscritti e la loro relazione con i prestiti.
-    """
+    """ORM model mapping the 'members' table with its loans
+    relationship."""
 
     __tablename__ = "members"
 
@@ -20,7 +20,7 @@ class MemberModel(db.Model):
     loans = db.relationship("LoanModel", back_populates="member")
 
     def to_dict(self) -> dict:
-        """Ritorna i dettagli dell'utente omettendo la password."""
+        """Return member fields as a dictionary, excluding the password."""
         return {
             "id": self.id,
             "username": self.username,
@@ -29,9 +29,8 @@ class MemberModel(db.Model):
         }
 
     def update(self, **kwargs) -> None:
-        """Aggiorna le colonne in base ai kwargs forniti."""
+        """Update model columns from keyword arguments, ignoring password
+        changes."""
         for key, value in kwargs.items():
-            if (
-                hasattr(self, key) and key != "password"
-            ):  # Previene update password diretto
+            if hasattr(self, key) and key != "password":
                 setattr(self, key, value)

@@ -1,11 +1,10 @@
+"""SQLAlchemy ORM model for the books table."""
+
 from src.models.base import db
 
 
 class BookModel(db.Model):
-    """
-    Modello SQLAlchemy per mappare la tabella 'books' nel database.
-    Definisce le colonne e le relazioni (es. con il catalogo) per la persistenza dei libri.
-    """
+    """ORM model mapping the 'books' table with its catalogue relationship."""
 
     __tablename__ = "books"
 
@@ -21,7 +20,7 @@ class BookModel(db.Model):
     catalogue = db.relationship("CatalogueModel", back_populates="books")
 
     def to_dict(self) -> dict:
-        """Restituisce le proprietà del libro in formato dizionario."""
+        """Return the book's fields as a dictionary."""
         return {
             "id": self.id,
             "work_id": self.work_id,
@@ -34,7 +33,7 @@ class BookModel(db.Model):
         }
 
     def update(self, **kwargs) -> None:
-        """Aggiorna le colonne del modello in base ai kwargs forniti."""
+        """Update model columns from keyword arguments."""
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)

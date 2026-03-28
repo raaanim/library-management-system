@@ -1,11 +1,11 @@
+"""Domain entity representing a Book, with getters and setters."""
+
+
 class Book:
-    """
-    Classe che rappresenta l'entità di dominio di un Libro.
-    Incapsula le proprietà del libro (titolo, autori, etc.) con relativi getter e setter.
-    """
+    """Domain entity for a book: encapsulates title, authors, languages
+    and metadata."""
 
     def __init__(self, **kwargs) -> None:
-        # Inizializzazione degli attributi, prelevando i valori dai kwargs passati al costruttore
         self.__id: str | int | None = kwargs.get("id")
         self.__title: str | None = kwargs.get("title")
         self.__authors: list[str] = kwargs.get("authors", [])
@@ -14,36 +14,47 @@ class Book:
         self.__cover_url: str | None = kwargs.get("cover_url")
 
     def get_id(self) -> str | int | None:
+        """Return the book identifier."""
         return self.__id
 
     def get_title(self) -> str | None:
+        """Return the book title."""
         return self.__title
 
     def get_authors(self) -> list[str]:
+        """Return a copy of the authors list."""
         return self.__authors.copy()
 
     def get_languages(self) -> list[str]:
+        """Return a copy of the languages list."""
         return self.__languages.copy()
 
     def get_first_publish_year(self) -> int | None:
+        """Return the first publication year."""
         return self.__first_publish_year
 
     def get_cover_url(self) -> str | None:
+        """Return the cover image URL."""
         return self.__cover_url
 
     def set_title(self, title: str) -> None:
+        """Set the book title."""
         self.__title = title
 
     def set_authors(self, authors: list[str]) -> None:
+        """Set the authors list (stored as a copy)."""
         self.__authors = authors.copy()
 
     def set_languages(self, languages: list[str]) -> None:
+        """Set the languages list (stored as a copy)."""
         self.__languages = languages.copy()
 
     def set_first_publish_year(self, year: int) -> None:
+        """Set the first publication year."""
         self.__first_publish_year = year
 
     def set_cover_url(self, cover_url: str) -> None:
+        """Set the cover image URL."""
         self.__cover_url = cover_url
 
     def __eq__(self, other: object) -> bool:
@@ -54,4 +65,7 @@ class Book:
     def __str__(self) -> str:
         authors = ", ".join(self.__authors)
         languages = ", ".join(self.__languages)
-        return f"{self.__title} ({self.__first_publish_year}) - {authors} [{languages}]"
+        return (
+            f"{self.__title} ({self.__first_publish_year}) - "
+            f"{authors} [{languages}]"
+        )
