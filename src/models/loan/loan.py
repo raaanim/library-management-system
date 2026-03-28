@@ -1,3 +1,5 @@
+"""Domain entity representing a library loan."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,10 +14,8 @@ if TYPE_CHECKING:
 
 @dataclass
 class Loan:
-    """
-    Rappresenta l'entità di dominio di un Prestito.
-    Memorizza le informazioni sul libro, l'utente e le date, e calcola le penali in caso di ritardo.
-    """
+    """Domain entity for a loan: links a member and a book with dates
+    and fine tracking."""
 
     DAILY_FINE = 1.0
 
@@ -28,11 +28,14 @@ class Loan:
     fine: float = 0.0
 
     def is_overdue(self) -> bool:
+        """Return True if the loan is past its due date."""
         if self.return_date is None:
             return date.today() > self.due_date
         return self.return_date > self.due_date
 
     def calculate_fine(self) -> float:
+        """Calculate and return the overdue fine based on days past due
+        date."""
         if not self.is_overdue():
             self.fine = 0.0
             return self.fine
@@ -47,6 +50,7 @@ class Loan:
         return self.fine
 
     def close_loan(self, return_date: date) -> None:
+        """Record the return date and compute the final fine."""
         self.return_date = return_date
         self.fine = self.calculate_fine()
 

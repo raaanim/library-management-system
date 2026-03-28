@@ -1,6 +1,7 @@
+"""SQLAlchemy ORM model for the wishlists table."""
+
 from src.models.base import db
 
-# Association table for Many-to-Many relationship between Wishlists and Books
 wishlist_books = db.Table(
     "wishlist_books",
     db.Column(
@@ -19,10 +20,8 @@ wishlist_books = db.Table(
 
 
 class WishlistModel(db.Model):
-    """
-    Modello SQLAlchemy che riflette la tabella 'wishlists' nel database.
-    Gestisce la relazione uno-a-uno con il membro e molti-a-molti con i libri.
-    """
+    """ORM model mapping the 'wishlists' table with one-to-one member and
+    many-to-many books."""
 
     __tablename__ = "wishlists"
 
@@ -35,14 +34,14 @@ class WishlistModel(db.Model):
     )
 
     def to_dict(self) -> dict:
-        """Ritorna la wishlist e l'ID del proprietario."""
+        """Return the wishlist id and owner member_id as a dictionary."""
         return {
             "id": self.id,
             "member_id": self.member_id,
         }
 
     def update(self, **kwargs) -> None:
-        """Aggiorna le colonne in base ai kwargs forniti."""
+        """Update model columns from keyword arguments."""
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
