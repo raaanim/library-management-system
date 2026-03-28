@@ -12,3 +12,5 @@ instance/
 .pytest_cache/
 .mypy_cache/
 htmlcov/
+migrations/
+.flake8
