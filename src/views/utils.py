@@ -1,7 +1,21 @@
-"""
-Questo file `utils.py` conterrà funzioni di utilità condivise tra le diverse Viste.
+"""Utility decorators for view functions."""
 
-Scopo principale attuale:
-- Definire il decoratore `@login_required` che le views private (loan_view, wishlist_view) potranno importare.
-Questo decoratore controllerà se esiste una sessione attiva ("member_id" in session) e, in caso contrario, reindirizzerà l'utente alla pagina di login.
-"""
+from functools import wraps
+
+from flask import flash, redirect, session, url_for
+
+
+def login_required(f):
+    """Redirect to login if the member is not authenticated."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "member_id" not in session:
+            flash(
+                "Devi effettuare l'accesso per visualizzare questa pagina.",
+                "warning",
+            )
+            return redirect(url_for("member.login"))
+        return f(*args, **kwargs)
+
+    return decorated_function
